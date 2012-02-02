@@ -1,0 +1,40 @@
+== StorageRoom Rails Webhook Example
+
+This Rails application shows how to use the StorageRoom Ruby Gem (https://github.com/thriventures/storage_room_gem) in a Rails application to accept Webhook callbacks from the JSON-based StorageRoom CMS (http://storageroomapp.com).
+
+
+== Installation
+
+Clone the project and run "bundle install" to install the required dependencies.
+
+
+== Summary
+
+* Add the StorageRoom Gem to your Gemfile (Gemfile)
+* Define your StorageRoom API credentials (config/initializers/storage_room.rb)
+* Define your StorageRoom Entry (app/models/article.rb)
+* Create a controller that accepts callbacks (app/controllers/storage_room_controller.rb)
+* Setup a route to your callback (config/routes.rb)
+* Clear the StorageRoom identity map before each request (app/controllers/application_controller.rb)
+* Deploy the Rails app to a webserver
+* OR: use http://progrium.com/localtunnel/ and run the server locally for testing (run "bundle exec rails server" in one tab and "bundle exec localtunnel 3000" in another one)
+* Update the Webhook Definition of the "Article" Collection on StorageRoom with the correct URL, username and password
+* Modify an Article on StorageRoom and see your Webhook come alive
+
+== TODO
+
+Please refer to the TODO file.
+
+== Maintainers
+
+* Sascha Konietzke 
+
+== Bugs and Feedback
+
+If you discover any bugs, please create an issue on GitHub.
+
+http://github.com/thriventures/storage_room_rails_webhook_example/issues
+
+== License
+
+MIT License. Copyright 2012 Thriventures UG (haftungsbeschränkt) - http://www.thriventures.com
