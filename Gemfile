@@ -7,7 +7,7 @@ gem 'rails', '3.2.1'
 
 gem 'sqlite3'
 
-gem 'storage_room' # Use the StorageRoom Ruby Gem to process webhooks
+gem 'storage_room', '>= 0.3.19' # Use the StorageRoom Ruby Gem to process webhooks
 gem 'localtunnel'
 
 # Gems used only for assets and not required
