@@ -1,18 +1,13 @@
 class StorageRoomController < ApplicationController
   skip_before_filter :verify_authenticity_token
   before_filter :require_http_basic
+  before_filter :get_collections
+  before_filter :parse_webhook_call
   
   # This should be configured as the receiver of Webhooks on the "Shops" Collection on StorageRoom.
   # When a Shop is updated it will update the Locations of all Products that belong to the Shop.
   # If updating the Location of Products is the only job the Webhook should do then only the "On Update" option of the Webhook should be set to yes.
-  def shops
-    # Load both Collections from StorageRoom to automatically configure the Entry Classes
-    @shop_collection    = StorageRoom::Collection.find('4f327afb421aa9867c000042')
-    @product_collection = StorageRoom::Collection.find('4f327ab5421aa9867c000028')
-
-    # Parse the passed WebhookCall of the request body
-    @webhook_call = StorageRoom::WebhookCall.new_from_response_data(params[:webhook_call])
-    
+  def shops    
     # Set the shop variable to the entry that was updated
     @shop = @webhook_call.entry
       
@@ -30,9 +25,29 @@ class StorageRoomController < ApplicationController
         
           # Update the location of the product and save it
           product.location = @shop.location
-          # product.skip_webhooks = true # this can optionally be set to true to avoid Webhooks on the Product Collection
+          product.skip_webhooks = true # this must be set to avoid an infinite loop of webhooks
           product.save
         end
+      end
+    end
+    
+    # Return an empty ok response so that StorageRoom knows everything went alright
+    render :nothing => true, :status => :ok
+  end
+  
+  
+  # Set the location of a product to the location of the associated store.
+  def products
+    @product = @webhook_call.entry
+    
+    if @webhook_call[:@event] == 'create' || @webhook_call[:@event] == 'update'
+      logger.info "== A product (#{@product[:@url]}) has been created/updated on StorageRoom =="
+      
+      if @product.shop && @product.shop.location != @product.location
+        @product.location = @product.shop.location
+        
+        @product.skip_webhooks = true # this must be set to avoid an infinite loop of webhooks
+        @product.save        
       end
     end
     
@@ -47,5 +62,16 @@ class StorageRoomController < ApplicationController
       authenticate_or_request_with_http_basic("StorageRoom") do |username, password|
         username == 'storage_room' && password = 'secret'
       end
+    end
+    
+    def get_collections
+      # Load both Collections from StorageRoom to automatically configure the Entry Classes
+      @shop_collection    = StorageRoom::Collection.find('4f327afb421aa9867c000042')
+      @product_collection = StorageRoom::Collection.find('4f327ab5421aa9867c000028')
+    end
+    
+    def parse_webhook_call
+      # Parse the passed WebhookCall of the request body
+      @webhook_call = StorageRoom::WebhookCall.new_from_response_data(params[:webhook_call])
     end
 end

@@ -38,3 +38,10 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
+
+if RUBY_VERSION < '1.9'
+  gem "ruby-debug" #, ">= 0.10.3"
+else
+  gem "ruby-debug-base19", "=0.11.25" # later versions crashed on server start
+  gem "ruby-debug19", "=0.11.6" # later versions crashed on server start
+end

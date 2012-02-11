@@ -1,6 +1,7 @@
 StorageRoomRailsWebhookExample::Application.routes.draw do
   # Use this path in the Collection > Webhooks configuration for Collection "Article"
-  post 'callbacks/storage_room/shops'  => 'storage_room#shops',  :as => :storage_room_shops_callback
+  post 'callbacks/storage_room/shops'     => 'storage_room#shops',  :as => :storage_room_shops_callback
+  post 'callbacks/storage_room/products'  => 'storage_room#products',  :as => :storage_room_products_callback
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
